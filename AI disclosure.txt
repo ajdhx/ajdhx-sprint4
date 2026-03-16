@@ -19,3 +19,8 @@ example). xUnit tests are required.
 of these 9 user stories from the table
 9. Yes (to implementation plan)
 10. Please update comments and spacing (not including AI disclosure) to the PEP 8 style guide. Brief comments are best. 
+
+
+Note: The chatgpt tests were working under the original framework, but that was updated in part 8, where the 9 acceptance
+criteria from sprint 1 replaced the original tests. Fortunately the chatgpt tests were already testing 4.2 and 5.1, so they
+weren't modified significantly by claude.
