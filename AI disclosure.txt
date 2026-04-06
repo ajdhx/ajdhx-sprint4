@@ -1,7 +1,7 @@
 
 AI disclosure:
 
-The following prompts were used with an AI language model in an AI development environment during the development of this work.
+The following prompts were used with an AI language model in either an AI development environment or in a chat interface during the development of this work.
 
 1. Can you help me:
 

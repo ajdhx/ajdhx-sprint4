@@ -16,12 +16,12 @@ class TestPegSolitaireGame(unittest.TestCase):
     # US 1, AC 1.2 – generated board dimensions match stored size
     def test_us1_ac1_2_board_size_reflected(self):
         game = PegSolitaireGame("English", 7)
-        self.assertEqual(len(game.board), 7)
-        self.assertEqual(len(game.board[0]), 7)
+        self.assertEqual(len(game.get_board()), 7)
+        self.assertEqual(len(game.get_board()[0]), 7)
 
         game2 = PegSolitaireGame("Diamond", 5)
-        self.assertEqual(len(game2.board), 5)
-        self.assertEqual(len(game2.board[0]), 5)
+        self.assertEqual(len(game2.get_board()), 5)
+        self.assertEqual(len(game2.get_board()[0]), 5)
 
     # US 1, AC 1.3 – stored type matches input
     def test_us1_ac1_3_record_board_type(self):
@@ -41,8 +41,8 @@ class TestPegSolitaireGame(unittest.TestCase):
         hexagon = PegSolitaireGame("Hexagon", 7)
 
         # (0, 2) is a valid peg on English but invalid on Diamond
-        self.assertEqual(english.board[0][2], 1)
-        self.assertEqual(diamond.board[0][2], 0)
+        self.assertEqual(english.get_board()[0][2], 1)
+        self.assertEqual(diamond.get_board()[0][2], 0)
 
         # Peg counts differ across all three types (32, 24, 36)
         self.assertNotEqual(english.get_peg_count(), diamond.get_peg_count())
@@ -55,7 +55,7 @@ class TestPegSolitaireGame(unittest.TestCase):
         center = game.size // 2
 
         self.assertGreater(game.get_peg_count(), 0)
-        self.assertEqual(game.board[center][center], 2)  # center starts empty
+        self.assertEqual(game.get_board()[center][center], 2)  # center starts empty
         self.assertFalse(game.is_game_over())
 
     # US 4, AC 4.1 – valid move updates the board correctly
@@ -65,9 +65,9 @@ class TestPegSolitaireGame(unittest.TestCase):
         self.assertTrue(game.is_valid_move(1, 3, 3, 3))
         self.assertTrue(game.make_move(1, 3, 3, 3))
 
-        self.assertEqual(game.board[1][3], 2)  # start is now empty
-        self.assertEqual(game.board[2][3], 2)  # jumped peg removed
-        self.assertEqual(game.board[3][3], 1)  # peg placed at destination
+        self.assertEqual(game.get_board()[1][3], 2)  # start is now empty
+        self.assertEqual(game.get_board()[2][3], 2)  # jumped peg removed
+        self.assertEqual(game.get_board()[3][3], 1)  # peg placed at destination
 
         self.assertFalse(game.is_valid_move(1, 3, 3, 3))   # already moved
         self.assertFalse(game.is_valid_move(0, 3, -2, 3))  # out of bounds
@@ -80,8 +80,8 @@ class TestPegSolitaireGame(unittest.TestCase):
         result = game.make_move(2, 3, 3, 3)  # only one space away
 
         self.assertFalse(result)
-        self.assertEqual(game.board[2][3], 1)  # original peg still there
-        self.assertEqual(game.board[3][3], 2)  # center still empty
+        self.assertEqual(game.get_board()[2][3], 1)  # original peg still there
+        self.assertEqual(game.get_board()[3][3], 2)  # center still empty
 
     # US 5, AC 5.1 – one peg remaining means the player has won
     def test_us5_ac5_1_player_wins(self):
@@ -90,9 +90,9 @@ class TestPegSolitaireGame(unittest.TestCase):
         # Clear the board, leave a single peg
         for r in range(game.size):
             for c in range(game.size):
-                if game.board[r][c] != 0:
-                    game.board[r][c] = 2
-        game.board[3][3] = 1
+                if game._board[r][c] != 0:
+                    game._board[r][c] = 2
+        game._board[3][3] = 1
 
         self.assertTrue(game.has_won())
         self.assertTrue(game.is_game_over())  # no moves left either

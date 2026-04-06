@@ -109,9 +109,10 @@ class PegSolitaireGUI:
         self.offset_x = (self.canvas_size - actual) // 2
         self.offset_y = (self.canvas_size - actual) // 2
 
+        board = self.game.get_board()
         for r in range(size):
             for c in range(size):
-                val = self.game.board[r][c]
+                val = board[r][c]
                 if val == 0:
                     continue
 
@@ -150,9 +151,10 @@ class PegSolitaireGUI:
         size = self.game.size
         clicked_r = clicked_c = -1
 
+        board = self.game.get_board()
         for r in range(size):
             for c in range(size):
-                if self.game.board[r][c] == 0:
+                if board[r][c] == 0:
                     continue
 
                 cx = self.offset_x + c * self.cell_size
@@ -170,7 +172,7 @@ class PegSolitaireGUI:
         if clicked_r == -1:
             return
 
-        val = self.game.board[clicked_r][clicked_c]
+        val = board[clicked_r][clicked_c]
         if val == 1:
             self.selected_pos = (clicked_r, clicked_c)
             self.draw_board()
@@ -204,10 +206,7 @@ class PegSolitaireGUI:
 
     # [Sprint 3 Change] Added randomize functionality to randomize the board state (pegs and empty holes) for Sprint 3.
     def randomize(self):
-        for r in range(self.game.size):
-            for c in range(self.game.size):
-                if self.game.board[r][c] != 0:
-                    self.game.board[r][c] = random.choice([1, 2])
+        self.game.randomize_board()
         self.draw_board()
 
 
