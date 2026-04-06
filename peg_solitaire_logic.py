@@ -1,4 +1,7 @@
-class PegSolitaireGame:
+import random
+
+# [Sprint 3 Change] Refactored the core game logic into a base class to establish a class hierarchy.
+class PegSolitaireBase:
     def __init__(self, board_type="English", size=7):
         self.board_type = board_type
         self.size = size
@@ -129,3 +132,36 @@ class PegSolitaireGame:
     def has_won(self):
         """Return True if exactly one peg remains."""
         return self.get_peg_count() == 1
+
+
+# [Sprint 3 Change] Created ManualGame subclass inheriting from PegSolitaireBase. 
+# This handles the standard user-driven gameplay.
+class ManualGame(PegSolitaireBase):
+    pass
+
+
+# [Sprint 3 Change] Created AutomatedGame subclass to handle automated computer gameplay.
+class AutomatedGame(PegSolitaireBase):
+
+    # [Sprint 3 Change] Added get_all_valid_moves to evaluate all possible jumps for automation.
+    def get_all_valid_moves(self):
+        moves = []
+        directions = [(0,2),(0,-2),(2,0),(-2,0)]
+        if self.board_type == "Hexagon":
+            directions += [(2,-2),(-2,2)]
+
+        for r in range(self.size):
+            for c in range(self.size):
+                if self.board[r][c] == 1:
+                    for dr, dc in directions:
+                        if self.is_valid_move(r, c, r+dr, c+dc):
+                            moves.append((r, c, r+dr, c+dc))
+        return moves
+
+    # [Sprint 3 Change] Added make_auto_move to execute a random valid jump from available moves.
+    def make_auto_move(self):
+        moves = self.get_all_valid_moves()
+        if not moves:
+            return False
+        move = random.choice(moves)
+        return self.make_move(*move)

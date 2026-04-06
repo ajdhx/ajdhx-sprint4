@@ -1,6 +1,8 @@
 import tkinter as tk
 from tkinter import messagebox
-from peg_solitaire_logic import PegSolitaireGame
+# [Sprint 3 Change] Imported the new subclasses from our refactored class hierarchy.
+from peg_solitaire_logic import ManualGame, AutomatedGame
+import random
 
 
 class PegSolitaireGUI:
@@ -8,7 +10,7 @@ class PegSolitaireGUI:
         self.root = root
         self.root.title("Peg Solitaire")
 
-        self.game = PegSolitaireGame("English", 7)
+        self.game = ManualGame("English", 7)
         self.selected_pos = None
 
         self._setup_ui()
@@ -32,7 +34,18 @@ class PegSolitaireGUI:
                 command=self.new_game
             ).pack(anchor="w")
 
-        # Centre: game canvas
+        # [Sprint 3 Change] Added Game Mode UI selector (Manual vs. Automated) for Sprint 3 requirements.
+        tk.Label(left_frame, text="Game Mode").pack(anchor="w", pady=(10, 0))
+
+        self.mode_var = tk.StringVar(value="Manual")
+        for mode in ("Manual", "Automated"):
+            tk.Radiobutton(
+                left_frame, text=mode,
+                variable=self.mode_var, value=mode,
+                command=self.new_game
+            ).pack(anchor="w")
+
+        # Center: game canvas
         center_frame = tk.Frame(self.root)
         center_frame.grid(row=0, column=1, padx=10, pady=10)
 
@@ -59,6 +72,9 @@ class PegSolitaireGUI:
         size_entry.bind("<Return>", lambda event: self.new_game())
 
         tk.Button(right_frame, text="New Game", command=self.new_game).pack(anchor="e")
+        # [Sprint 3 Change] Added 'Autoplay' and 'Randomize' buttons for automated gameplay and board randomization.
+        tk.Button(right_frame, text="Autoplay", command=self.autoplay).pack(anchor="e")
+        tk.Button(right_frame, text="Randomize", command=self.randomize).pack(anchor="e")
 
     def new_game(self):
         """Start a fresh game with the current type and size settings."""
@@ -71,7 +87,14 @@ class PegSolitaireGUI:
             messagebox.showerror("Invalid Size", "Please enter an integer from 3 to 15.")
             return
 
-        self.game = PegSolitaireGame(board_type, size_val)
+        mode = self.mode_var.get()
+
+        # [Sprint 3 Change] Instantiate the appropriate subclass based on the selected game mode.
+        if mode == "Manual":
+            self.game = ManualGame(board_type, size_val)
+        else:
+            self.game = AutomatedGame(board_type, size_val)
+
         self.selected_pos = None
         self.draw_board()
 
@@ -159,6 +182,33 @@ class PegSolitaireGUI:
                     messagebox.showinfo("Game Over", "You Win!")
                 elif self.game.is_game_over():
                     messagebox.showinfo("Game Over", "No more valid moves.")
+
+    # [Sprint 3 Change] Added autoplay functionality to loop automated moves until the game ends.
+    def autoplay(self):
+        if not isinstance(self.game, AutomatedGame):
+            messagebox.showerror("Error", "Switch to Automated mode first.")
+            return
+
+        def step():
+            if not self.game.make_auto_move():
+                if self.game.has_won():
+                    messagebox.showinfo("Game Over", "Auto Win!")
+                else:
+                    messagebox.showinfo("Game Over", "Auto Lost!")
+                return
+
+            self.draw_board()
+            self.root.after(300, step)
+
+        step()
+
+    # [Sprint 3 Change] Added randomize functionality to randomize the board state (pegs and empty holes) for Sprint 3.
+    def randomize(self):
+        for r in range(self.game.size):
+            for c in range(self.game.size):
+                if self.game.board[r][c] != 0:
+                    self.game.board[r][c] = random.choice([1, 2])
+        self.draw_board()
 
 
 def main():
